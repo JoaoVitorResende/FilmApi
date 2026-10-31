@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"log/slog"
-	"main/api"
+	"main/external/omdb"
+	"main/internal/application"
+	"main/internal/interfaces/httpapi"
 	"net/http"
 	"os"
 	"time"
@@ -18,17 +20,19 @@ func main() {
 }
 
 func run() error {
-
 	apiKey := os.Getenv("API_KEY")
 
 	if apiKey == "" {
 		fmt.Println("variável de ambiente API_KEY não definida")
 		os.Exit(1)
 	}
-	
+
 	fmt.Println("chave carregada com sucesso")
 
-	handler := api.NewHandler(apiKey)
+	client := omdb.NewClient(apiKey)
+	uc := application.NewSearchFilms(client)
+	handler := httpapi.Handler(uc)
+
 	s := http.Server{
 		ReadTimeout:  10 * time.Second,
 		IdleTimeout:  time.Minute,
