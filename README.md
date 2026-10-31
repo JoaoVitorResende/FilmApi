@@ -2,48 +2,48 @@
 
 # FilmApi
 
-API em Go que busca filmes pelo nome consultando a [OMDb API](https://www.omdbapi.com/).
+A Go API that searches films by title using the [OMDb API](https://www.omdbapi.com/).
 
-## Requisitos
+## Requirements
 
-- Go 1.22 ou superior
-- Chave de API do OMDb (gratuita em https://www.omdbapi.com/apikey.aspx)
+- Go 1.22 or higher
+- An OMDb API key (free at https://www.omdbapi.com/apikey.aspx)
 
-## Configuração
+## Configuration
 
-A chave é lida da variável de ambiente `API_KEY`.
+The key is read from the `API_KEY` environment variable.
 
 PowerShell:
 
 ```powershell
-$env:API_KEY = "sua-chave"
+$env:API_KEY = "your-key"
 ```
 
 Linux/macOS:
 
 ```bash
-export API_KEY="sua-chave"
+export API_KEY="your-key"
 ```
 
-## Executando
+## Running
 
 ```bash
 go run ./cmd/api
 ```
 
-O servidor sobe em `http://localhost:8080`.
+The server starts at `http://localhost:8080`.
 
 ## Endpoint
 
-### GET /?s={nome}
+### GET /?s={title}
 
-Busca filmes pelo nome.
+Searches films by title.
 
 ```bash
 curl "http://localhost:8080/?s=matrix"
 ```
 
-Resposta (200):
+Response (200):
 
 ```json
 {
@@ -59,35 +59,35 @@ Resposta (200):
 }
 ```
 
-Erros:
+Errors:
 
-| Status | Quando                                  |
+| Status | When                                    |
 |--------|-----------------------------------------|
-| 400    | parâmetro `s` ausente ou vazio          |
-| 404    | nenhum filme encontrado                 |
-| 502    | falha ao consultar o OMDb               |
-| 500    | erro inesperado                         |
+| 400    | `s` parameter missing or empty          |
+| 404    | no films found                          |
+| 502    | failed to reach OMDb                    |
+| 500    | unexpected error                        |
 
-Formato do erro:
+Error format:
 
 ```json
 { "error": "film name can't be empty" }
 ```
 
-## Estrutura
+## Project structure
 
 ```
-cmd/api/                    ponto de entrada (main.go)
-external/omdb/              cliente HTTP do OMDb (implementa FilmSearcher)
-internal/domain/            entidade Film e validação do nome
-internal/application/       caso de uso SearchFilms e interface FilmSearcher
-internal/exception/         erros da aplicação
-internal/interfaces/httpapi handler, DTOs e tradução de erros para HTTP
+cmd/api/                    entry point (main.go)
+external/omdb/              OMDb HTTP client (implements FilmSearcher)
+internal/domain/            Film entity and name validation
+internal/application/       SearchFilms use case and FilmSearcher interface
+internal/exception/         application errors
+internal/interfaces/httpapi handler, DTOs and error-to-HTTP mapping
 ```
 
-A `application` define a interface `FilmSearcher` e o `external/omdb` a implementa, então o caso de uso não depende do OMDb e pode ser testado com um fake.
+The `application` layer defines the `FilmSearcher` interface and `external/omdb` implements it, so the use case does not depend on OMDb and can be tested with a fake.
 
-## Testes
+## Tests
 
 ```bash
 go test ./...
@@ -95,4 +95,4 @@ go test ./...
 
 ## CORS
 
-Por padrão aceita requisições de `http://localhost:3000`. Para mudar, edite `AllowedOrigins` em `internal/interfaces/httpapi/handler.go`.
+By default, requests from `http://localhost:3000` are allowed. To change this, edit `AllowedOrigins` in `internal/interfaces/httpapi/handler.go`.
